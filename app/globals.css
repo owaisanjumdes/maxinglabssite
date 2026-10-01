@@ -1,0 +1,294 @@
+@import "tailwindcss";
+
+/* ------------------------------------------------------------------
+   Design tokens. Measured from the brief - change them here only.
+   ------------------------------------------------------------------ */
+/* ------------------------------------------------------------------
+   Palette. Single source of truth — every Tailwind colour below is an
+   alias onto one of these, so nothing references a raw hex.
+   ------------------------------------------------------------------ */
+:root {
+  --bg: #000000;
+  --bg-elevated: #07080f;
+  --bg-subtle: #0b0e1c;
+  --border: #1d254c;
+  --border-subtle: #272742;
+  --text-primary: #f5f5f7;
+  --text-secondary: #a1a3b3;
+  /* Lightened from #6B6E85, which failed AA on both bg and bg-elevated. */
+  --text-muted: #8a8da0;
+  --accent: #2254f5;
+  --accent-hover: #1a45d6;
+  /* #2254F5 as text is only 3.65:1 on black; this is 5.9:1. Fills keep --accent. */
+  --accent-text: #5b7fff;
+  --accent-glow: #3150cb;
+  --accent-deep: #071861;
+  --badge-surface: #010331;
+  --cta-secondary-bg: #efeeec;
+  --cta-secondary-text: #131313;
+  --on-accent: #ffffff;
+  --success: #22c55e;
+  --error: #ef4444;
+}
+
+@theme {
+  --color-paper: var(--bg);
+  --color-surface: var(--bg-elevated);
+  --color-subtle: var(--bg-subtle);
+  --color-warm: var(--border);
+  --color-line-soft: var(--border-subtle);
+  --color-ink: var(--text-primary);
+  --color-elevated: var(--bg-elevated);
+  --color-body: var(--text-secondary);
+  --color-muted: var(--text-muted);
+  --color-accent: var(--accent);
+  --color-accent-hover: var(--accent-hover);
+  --color-accent-text: var(--accent-text);
+  --color-badge: var(--badge-surface);
+  --color-cta2: var(--cta-secondary-bg);
+  --color-cta2-text: var(--cta-secondary-text);
+  --color-on-accent: var(--on-accent);
+  --color-success: var(--success);
+  --color-error: var(--error);
+
+  --radius-card: 10px;
+
+  /* Apple ships SF Pro with the OS, so Apple devices render it natively.
+     It cannot be legally self-hosted as a webfont, so Inter (loaded in
+     layout.tsx) is the fallback everywhere else - the closest widely
+     licensed grotesk to SF. On Windows you will see Inter, not SF Pro. */
+  --font-sans:
+    -apple-system, BlinkMacSystemFont, "SF Pro Display", "SF Pro Text",
+    var(--font-inter), system-ui, "Segoe UI", sans-serif;
+  --font-serif: var(--font-instrument-serif), Georgia, serif;
+
+  --animate-marquee: marquee 42s linear infinite;
+  --animate-marquee-slow: marquee 70s linear infinite;
+  --animate-orbit: orbit 26s linear infinite;
+}
+
+@keyframes marquee {
+  from {
+    transform: translateX(0);
+  }
+  to {
+    transform: translateX(-50%);
+  }
+}
+
+@keyframes orbit {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+/* ------------------------------------------------------------------
+   Liquid Glass tokens (spec section 8).
+   Clear variant: near-zero tint plus a permanent dimming layer, because
+   Clear never adapts to the content beneath it (spec 3.5).
+   ------------------------------------------------------------------ */
+:root {
+  --lg-clear-tint: rgba(255, 255, 255, 0.04);
+  /* On black, a dark dimming layer is a no-op and the bar vanishes, so the
+     Clear dim becomes a light tint — the dark-mode treatment. Colour tokens
+     only; no glass component was modified. */
+  --lg-dim-clear: rgba(255, 255, 255, 0.07);
+  /* Controls sit slightly brighter than the bar so labels stay legible. */
+  --lg-dim-control: rgba(255, 255, 255, 0.11);
+  --lg-tint-accent: rgba(34, 84, 245, 0.55);
+  --lg-rim-strength: 0.55;
+  --lg-light-angle: 135deg;
+  --lg-blur: 2px;
+  --lg-saturate: 1.6;
+  --lg-refraction: 18;
+  --lg-bezel: 22px;
+  --lg-dispersion: 0.04;
+  --lg-accent: var(--accent);
+}
+
+/* Layer 5: specular rim. A conic gradient drawn as a ring only — the two
+   mask layers cancel everything but the 1.2px border box. Brightest on the
+   side facing --lg-light-angle, near-invisible opposite it. */
+.glass-rim {
+  padding: 1.2px;
+  background: conic-gradient(
+    from calc(var(--lg-light-angle) - 90deg),
+    rgba(255, 255, 255, calc(var(--lg-rim-strength) * 1.6)),
+    rgba(255, 255, 255, calc(var(--lg-rim-strength) * 0.28)) 22%,
+    rgba(255, 255, 255, calc(var(--lg-rim-strength) * 0.08)) 48%,
+    rgba(255, 255, 255, calc(var(--lg-rim-strength) * 0.5)) 74%,
+    rgba(255, 255, 255, calc(var(--lg-rim-strength) * 1.6))
+  );
+  -webkit-mask:
+    linear-gradient(#000 0 0) content-box,
+    linear-gradient(#000 0 0);
+  -webkit-mask-composite: xor;
+  mask:
+    linear-gradient(#000 0 0) content-box,
+    linear-gradient(#000 0 0);
+  mask-composite: exclude;
+}
+
+/* Content sitting on glass uses vibrancy, never pure white (spec 2.6). */
+.glass-vibrant {
+  color: rgba(255, 255, 255, 0.95);
+}
+.glass-vibrant-dim {
+  color: rgba(255, 255, 255, 0.72);
+}
+
+/* Spec 9: Reduce Transparency — frostier, refraction off. */
+@media (prefers-reduced-transparency: reduce) {
+  .glass-refract {
+    backdrop-filter: blur(20px) saturate(1.3) !important;
+    -webkit-backdrop-filter: blur(20px) saturate(1.3) !important;
+  }
+  :root {
+    --lg-dim-clear: rgba(0, 0, 0, 0.75);
+  }
+}
+
+/* Spec 9: Increase Contrast — near-solid fill, contrasting border, no fringe. */
+@media (prefers-contrast: more) {
+  .glass-refract {
+    backdrop-filter: none !important;
+    -webkit-backdrop-filter: none !important;
+  }
+  :root {
+    --lg-dim-clear: rgba(0, 0, 0, 0.92);
+  }
+  .glass-surface {
+    outline: 1.5px solid rgba(255, 255, 255, 0.9);
+    outline-offset: -1.5px;
+  }
+  .glass-rim {
+    display: none;
+  }
+}
+
+/* ------------------------------------------------------------------
+   Base
+   ------------------------------------------------------------------ */
+@layer base {
+  html {
+    scroll-behavior: smooth;
+    /* clears the floating navbar when jumping to an anchor */
+    scroll-padding-top: 8.5rem;
+    -webkit-font-smoothing: antialiased;
+    text-rendering: optimizeLegibility;
+  }
+
+  body {
+    background-color: var(--color-paper);
+    color: var(--color-body);
+    font-family: var(--font-sans);
+  }
+
+  ::selection {
+    background-color: rgba(34, 84, 245, 0.35);
+    color: var(--on-accent);
+  }
+
+  :focus-visible {
+    outline: 2px solid var(--color-accent);
+    outline-offset: 3px;
+    border-radius: 4px;
+  }
+}
+
+/* ------------------------------------------------------------------
+   Utilities
+   ------------------------------------------------------------------ */
+
+/* Display type: tight negative tracking, set in em so it holds at any size.
+   The brief measures -2px at 42px, which is -0.048em. */
+@utility display {
+  font-family: var(--font-sans);
+  font-weight: 500;
+  letter-spacing: -0.045em;
+  line-height: 1.02;
+  color: var(--color-ink);
+}
+
+/* The signature move: second line of every heading in italic serif.
+   Uses --accent-text, not --accent: the fill blue fails AA as text. */
+@utility serif-accent {
+  font-family: var(--font-serif);
+  font-style: italic;
+  font-weight: 400;
+  color: var(--accent-text);
+  letter-spacing: -0.015em;
+}
+
+@utility eyebrow {
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: var(--text-muted);
+}
+
+/* Film grain for the dark closing band. */
+@utility grain {
+  position: relative;
+}
+@utility grain-layer {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  opacity: 0.07;
+  mix-blend-mode: overlay;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='160'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='160' height='160' filter='url(%23n)'/%3E%3C/svg%3E");
+}
+
+/* Edge fades so marquees and section seams dissolve into the paper. */
+@utility fade-x {
+  mask-image: linear-gradient(
+    to right,
+    transparent,
+    #000 8%,
+    #000 92%,
+    transparent
+  );
+}
+
+/* Scroll reveal. Elements start hidden and are released by Reveal.tsx
+   adding data-shown. Kept in CSS so there is no layout thrash. */
+@layer utilities {
+  [data-reveal] {
+    opacity: 0;
+    transform: translateY(14px);
+    transition:
+      opacity 0.62s cubic-bezier(0.22, 1, 0.36, 1),
+      transform 0.62s cubic-bezier(0.22, 1, 0.36, 1);
+    transition-delay: var(--reveal-delay, 0ms);
+  }
+
+  [data-reveal][data-shown="true"] {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  html {
+    scroll-behavior: auto;
+  }
+
+  [data-reveal] {
+    opacity: 1 !important;
+    transform: none !important;
+    transition: none !important;
+  }
+
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+}
