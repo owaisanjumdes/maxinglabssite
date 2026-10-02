@@ -1,111 +1,151 @@
 import { hero } from "@/content/site";
 import { bookingHref, bookingTargetProps } from "@/lib/booking";
 import { Button, Container } from "@/components/ui/Primitives";
-import {
-  Instagram,
-  LinkedIn,
-  Star,
-  XIcon,
-  YouTube,
-  YouTubeLockup,
-} from "@/components/ui/Icons";
+import Image from "next/image";
+import { XIcon, YouTube } from "@/components/ui/Icons";
 import { Reveal } from "@/components/ui/Reveal";
-import { MeshBackdrop } from "@/components/glass/MeshBackdrop";
 import { GlassButton } from "@/components/glass/GlassButton";
+import { GlassSurface } from "@/components/glass/GlassSurface";
 
-const ORBIT_SECONDS = 28;
+const ORBIT_SECONDS = 40;
 
-/** Faint concentric arcs with social icons riding the ring. */
+/* Four marks riding a squircle. YouTube and X are inline SVG painted in their
+   brand colours; Shorts and Reels are the supplied WebP assets. */
+/* Six riders so three are on screen at once across the half-circle window.
+   Four unique marks, so two repeat — the order is arranged so no visible
+   trio ever contains the same logo twice. */
+const ORBIT = [
+  { kind: "svg", Icon: YouTube, color: "#FF0000", label: "YouTube" },
+  { kind: "img", src: "/Youtube_shorts_icon.svg.webp", label: "YouTube Shorts" },
+  { kind: "img", src: "/Instagram_Reels_logo.svg.webp", label: "Instagram Reels" },
+  { kind: "svg", Icon: YouTube, color: "#FF0000", label: "YouTube 2" },
+  { kind: "svg", Icon: XIcon, color: "#000000", label: "X" },
+  { kind: "img", src: "/Instagram_Reels_logo.svg.webp", label: "Instagram Reels 2" },
+] as const;
+
+/** Social marks riding the lower arc of a circle. */
 function OrbitBackdrop() {
-  const icons = [
-    { Icon: YouTube, angle: 0 },
-    { Icon: LinkedIn, angle: 90 },
-    { Icon: Instagram, angle: 180 },
-    { Icon: XIcon, angle: 270 },
-  ];
-
-  /* Sits low enough that the orbiting icons never travel under the navbar —
-     refracted through the glass they read as smudges, not decoration. */
-  const ring = 540;
-
   return (
     <div
       aria-hidden="true"
-      className="pointer-events-none absolute left-1/2 top-[62%] -z-10 -translate-x-1/2 -translate-y-1/2"
+      className="pointer-events-none absolute left-1/2 -z-10 -translate-x-1/2"
+      /* Positioned by its centre so 3 and 9 o'clock sit beside the headline. */
+      style={{
+        width: "var(--orbit-size)",
+        height: "var(--orbit-size)",
+        top: "calc(var(--orbit-center-y) - var(--orbit-size) / 2)",
+        ["--orbit-seconds" as string]: `${ORBIT_SECONDS}s`,
+      }}
     >
-      {[280, 400, 540, 700, 880].map((size) => (
-        <div
-          key={size}
-          className="absolute rounded-full border border-ink/[0.065]"
-          style={{
-            width: size,
-            height: size,
-            left: -size / 2,
-            top: -size / 2,
-          }}
-        />
-      ))}
-
-      {/* Rotating ring; each icon counter-rotates so it stays upright. */}
-      <div
-        className="absolute animate-orbit"
-        style={{
-          width: ring,
-          height: ring,
-          left: -ring / 2,
-          top: -ring / 2,
-          animationDuration: `${ORBIT_SECONDS}s`,
-        }}
+      {/* Only the bottom half of the circle is drawn. Percentage viewBox so
+          one path serves every breakpoint; the stroke stays 1px at any size. */}
+      <svg
+        className="absolute inset-0 h-full w-full"
+        viewBox="0 0 100 100"
+        fill="none"
+        preserveAspectRatio="none"
       >
-        {icons.map(({ Icon, angle }) => (
-          <div
-            key={angle}
-            className="absolute left-1/2 top-1/2"
-            style={{
-              transform: `rotate(${angle}deg) translateY(-${ring / 2}px)`,
-            }}
-          >
-            <span
-              className="animate-orbit flex h-9 w-9 -translate-x-1/2 -translate-y-1/2 items-center justify-center rounded-full border border-warm bg-surface text-ink/45"
-              style={{
-                animationDuration: `${ORBIT_SECONDS}s`,
-                animationDirection: "reverse",
-              }}
-            >
-              <Icon className="h-[15px] w-[15px]" />
-            </span>
-          </div>
-        ))}
-      </div>
+        <path
+          d="M 0,50 A 50,50 0 0 0 50,100 A 50,50 0 0 0 100,50"
+          stroke="var(--border)"
+          strokeWidth="1"
+          vectorEffect="non-scaling-stroke"
+        />
+      </svg>
+
+      {ORBIT.map((item, i) => (
+        <div
+          key={item.label}
+          className="orbit-rider"
+          /* Negative delay spaces them evenly around one shared path. */
+          style={{ animationDelay: `-${(i * ORBIT_SECONDS) / ORBIT.length}s` }}
+        >
+          <span className="flex h-[60px] w-[60px] items-center justify-center rounded-[18px] border border-white bg-paper sm:h-[70px] sm:w-[70px]">
+            {item.kind === "svg" ? (
+              /* The inline SVGs paint with currentColor, so the brand
+                 colour goes on the wrapper rather than the icon props. */
+              <span className="flex" style={{ color: item.color }}>
+                <item.Icon className="h-[28px] w-[28px] sm:h-[32px] sm:w-[32px]" />
+              </span>
+            ) : (
+              <Image
+                src={item.src}
+                alt=""
+                width={72}
+                height={72}
+                className="h-[28px] w-[28px] object-contain sm:h-[32px] sm:w-[32px]"
+              />
+            )}
+          </span>
+        </div>
+      ))}
     </div>
   );
 }
 
 export function Hero() {
   return (
-    <section id="top" className="relative overflow-hidden pb-14 pt-32 sm:pb-20 sm:pt-44 lg:pt-52">
-      <MeshBackdrop />
+    <section id="top" className="relative overflow-x-clip pb-14 pt-28 sm:pb-20 sm:pt-36 lg:pt-40">
       <OrbitBackdrop />
 
       <Container className="relative">
-        <div className="mx-auto max-w-[860px] text-center">
+        <div className="mx-auto max-w-[940px] text-center">
           <Reveal>
-            <span className="inline-flex items-center gap-2 rounded-full border border-warm bg-surface px-4 py-2 text-[13.5px] font-medium tracking-[-0.01em] text-body/75 sm:px-5 sm:py-2.5 sm:text-[15px]">
-              <Star className="h-4 w-4 text-success" />
-              {hero.badge}
+            {/* Explicit heights + leading-none: the pill's box is defined by
+                the container, not by whatever line-height the children
+                inherit, so nothing can spill outside the rounded background. */}
+            <span className="inline-flex h-[40px] max-w-full items-center gap-[9px] overflow-hidden rounded-full bg-surface pl-[6px] pr-[15px] sm:h-[48px] sm:gap-[12px] sm:pl-[8px] sm:pr-[20px]">
+              {/* Glass chip. Radius 16 capsules it at both heights. The tint
+                  keeps a little translucency so the rim, inner shading and
+                  bezel refraction read as thickness rather than flat fill. */}
+              <GlassSurface
+                tag="span"
+                radius={16}
+                variant="tinted"
+                className="inline-flex h-[28px] shrink-0 items-center px-[11px] sm:h-[32px] sm:px-[13px]"
+                style={
+                  {
+                    boxShadow: "none",
+                    "--lg-tint-accent":
+                      "color-mix(in srgb, var(--accent) 86%, transparent)",
+                  } as React.CSSProperties
+                }
+              >
+                <span className="text-[11.5px] font-semibold leading-none tracking-[-0.01em] text-on-accent sm:text-[13px]">
+                  {hero.badgeChip}
+                </span>
+              </GlassSurface>
+              <span className="truncate text-[14px] font-medium leading-none tracking-[-0.02em] text-ink sm:text-[17px]">
+                {hero.badgeLabel}
+              </span>
             </span>
           </Reveal>
 
           <Reveal delay={90}>
-            <h1 className="display mx-auto mt-6 max-w-[900px] text-[34px] leading-[1.08] sm:mt-7 sm:text-[48px] lg:text-[58px]">
-              {hero.headlineBefore}
-              <YouTubeLockup />{" "}
-              <strong className="font-bold">{hero.headlineEmphasis}</strong>
+            <h1
+              className="display mt-6 text-[36px] uppercase leading-[1.04] sm:mt-7 sm:text-[54px] lg:text-[66px]"
+              style={{ fontWeight: 600 }}
+            >
+              {/* The h1 supplies family, weight, colour, caps and tracking;
+                  only accent segments override the colour. */}
+              {hero.headline.map((line, i) => (
+                <span key={i} className="block">
+                  {line.map((seg, j) =>
+                    seg.accent ? (
+                      <span key={j} className="text-accent-text">
+                        {seg.text}
+                      </span>
+                    ) : (
+                      <span key={j}>{seg.text}</span>
+                    ),
+                  )}
+                </span>
+              ))}
             </h1>
           </Reveal>
 
           <Reveal delay={170}>
-            <p className="mx-auto mt-5 max-w-[470px] text-[14px] leading-relaxed text-body/70 sm:text-[15px]">
+            <p className="mx-auto mt-5 max-w-[470px] text-[14px] font-medium leading-relaxed text-body/70 sm:text-[15px]">
               {hero.subtext}
             </p>
           </Reveal>

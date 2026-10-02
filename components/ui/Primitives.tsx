@@ -126,10 +126,10 @@ export function Button({
   ...rest
 }: ButtonProps) {
   const variants = {
-    dark: "bg-accent text-on-accent hover:bg-accent-hover",
+    dark: "bg-[var(--cta)] text-on-accent transition-colors duration-300 hover:bg-[var(--cta-hover)]",
     light:
       "bg-cta2 text-cta2-text border border-cta2 hover:brightness-95",
-    red: "bg-accent text-on-accent hover:bg-accent-hover",
+    red: "bg-[var(--cta)] text-on-accent transition-colors duration-300 hover:bg-[var(--cta-hover)]",
   } as const;
 
   const sizes = {

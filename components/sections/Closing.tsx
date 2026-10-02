@@ -6,16 +6,8 @@ import { Reveal } from "@/components/ui/Reveal";
 
 export function Closing() {
   return (
-    <section id="book" className="grain relative scroll-mt-36 overflow-hidden bg-elevated">
+    <section id="book" className="band grain relative scroll-mt-36 overflow-hidden">
       <span className="grain-layer" aria-hidden="true" />
-      <span
-        aria-hidden="true"
-        className="pointer-events-none absolute inset-0"
-        style={{
-          background:
-            "radial-gradient(ellipse 60% 70% at 50% 110%, color-mix(in srgb, var(--accent-glow) 26%, transparent), color-mix(in srgb, var(--accent-deep) 40%, transparent) 45%, transparent 75%)",
-        }}
-      />
 
       <Container className="relative py-20 md:py-28">
         <Reveal className="mx-auto max-w-[760px] text-center">

@@ -1,18 +1,15 @@
 import type { Metadata, Viewport } from "next";
-import { Inter, Instrument_Serif } from "next/font/google";
+import { Instrument_Serif } from "next/font/google";
+import { GeistSans } from "geist/font/sans";
 import { site } from "@/content/site";
 import { GlassRuntime } from "@/components/glass/GlassRuntime";
 import "./globals.css";
 
-/* Fallback grotesk for non-Apple devices. SF Pro is picked up from the OS
-   ahead of this in the --font-sans stack (see globals.css). */
-const inter = Inter({
-  subsets: ["latin"],
-  variable: "--font-inter",
-  display: "swap",
-});
+/* Geist is self-hosted by its package — no Google Fonts fetch at build. It
+   now leads the --font-sans stack, replacing the earlier SF-Pro-first
+   arrangement, so every platform renders the same typeface. */
 
-/* The red italic accent line on every heading. */
+/* The italic accent line on every heading. */
 const instrumentSerif = Instrument_Serif({
   subsets: ["latin"],
   weight: "400",
@@ -44,14 +41,19 @@ export const metadata: Metadata = {
 };
 
 export const viewport: Viewport = {
-  themeColor: "#000000",
+  themeColor: "#F5F4F1",
 };
 
 export default function RootLayout({
   children,
 }: Readonly<{ children: React.ReactNode }>) {
   return (
-    <html lang="en" className={`${inter.variable} ${instrumentSerif.variable}`}>
+    <html
+      lang="en"
+      /* Remove this attribute for the midnight palette. */
+      data-theme="light"
+      className={`${GeistSans.variable} ${instrumentSerif.variable}`}
+    >
       <body className="min-h-screen antialiased">
         <GlassRuntime />
         {children}

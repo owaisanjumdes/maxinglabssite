@@ -136,9 +136,9 @@ export function GlassSurface({
       ? `url(#${filterId}) saturate(var(--lg-saturate)) blur(var(--lg-blur))`
       : "blur(8px) saturate(1.8) brightness(1.05)";
 
-  // Spec 2.5: larger elements get deeper shadows.
-  const depth = Math.min(1, size.height / 100 || 0.6);
-  const shadow = `0 ${6 + depth * 6}px ${20 + depth * 18}px rgba(0,0,0,${0.10 + depth * 0.04}), 0 2px 8px rgba(0,0,0,0.08)`;
+  /* No drop shadow anywhere. Spec 2.5 scales one with element height, but
+     the site's standing rule is shadow-free; edge definition comes from the
+     specular rim and the hairline below instead. */
 
   return (
     <Tag
@@ -150,7 +150,7 @@ export function GlassSurface({
       className={`glass-surface relative isolate ${className}`}
       style={{
         borderRadius: radius,
-        boxShadow: shadow,
+        boxShadow: "none",
         scale: interactive ? scale : undefined,
         ...style,
       }}

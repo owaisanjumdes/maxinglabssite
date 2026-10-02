@@ -21,17 +21,23 @@ export const nav = {
     { label: "Process", href: "#process" },
     { label: "FAQ", href: "#faq" },
   ],
-  cta: "Book a call",
+  cta: "Guaranteed Organic Leads",
 };
 
 export const hero = {
-  badge: "Trusted by dozens of B2B businesses",
-  /* The headline is assembled in three parts so the YouTube logo can sit
-     inline between them. Keep the trailing/leading spaces. */
-  headlineBefore: "Add up to 30 calls/mo to your offer through ",
-  headlineEmphasis: "organic",
+  /* Eyebrow pill: a solid chip plus a label, matching the reference.
+     Previous copy was "Trusted by dozens of B2B businesses". */
+  badgeChip: "#001",
+  badgeLabel: "YouTube • Content Systems",
+  /* One array per headline line; segments marked `accent` render in the
+     brand blue. Re-break the lines by moving segments between rows. */
+  headline: [
+    [{ text: "We Build YouTube" }],
+    [{ text: "Channels That " }, { text: "Book", accent: true }],
+    [{ text: "10–20", accent: true }, { text: " Calls/Month" }],
+  ] as { text: string; accent?: boolean }[][],
   subtext: "Done-for-you. You record, and watch the qualified calls come in.",
-  primaryCta: "Book a strategy call",
+  primaryCta: "Guaranteed Organic Leads",
   secondaryCta: "See the results",
 };
 
@@ -335,7 +341,7 @@ export const closing = {
   headlineSerif: "Into Your Best Sales Channel?",
   body:
     "Book a 30-minute strategy call. We'll audit your channel live, show you the keywords your buyers are searching, and tell you honestly whether this is worth your money.",
-  cta: "Book a strategy call",
+  cta: "Guaranteed Organic Leads",
   meta: "Free · 30 minutes · No pitch deck",
 };
 

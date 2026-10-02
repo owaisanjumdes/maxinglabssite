@@ -61,7 +61,7 @@ export function Navbar() {
             <Logo
               tone="light"
               priority
-              className="h-[26px] sm:h-[30px] lg:h-[36px]"
+              className="logo-on-bar h-[26px] sm:h-[30px] lg:h-[36px]"
             />
           </a>
 
@@ -71,7 +71,7 @@ export function Navbar() {
               <li key={link.href}>
                 <a
                   href={link.href}
-                  className="glass-vibrant-dim text-[15px] font-medium tracking-[-0.015em] transition-colors hover:text-white lg:text-[16px]"
+                  className="text-[15px] font-medium tracking-[-0.015em] text-ink/70 transition-colors hover:text-ink lg:text-[16px]"
                 >
                   {link.label}
                 </a>
@@ -102,7 +102,7 @@ export function Navbar() {
               onClick={() => setOpen((v) => !v)}
               aria-label={open ? "Close menu" : "Open menu"}
               aria-expanded={open}
-              className="glass-vibrant flex h-11 w-11 items-center justify-center rounded-[8px] border border-white/20 transition-colors hover:bg-white/10 md:hidden"
+              className="flex h-11 w-11 items-center justify-center rounded-[8px] border border-ink/15 text-ink transition-colors hover:bg-ink/5 md:hidden"
             >
               <span className="relative block h-[10px] w-[16px]">
                 <span
@@ -133,7 +133,7 @@ export function Navbar() {
                   <a
                     href={link.href}
                     onClick={() => setOpen(false)}
-                    className="glass-vibrant block rounded-[7px] px-4 py-3 text-[15px] font-medium transition-colors hover:bg-white/10"
+                    className="block rounded-[7px] px-4 py-3 text-[15px] font-medium text-ink transition-colors hover:bg-ink/5"
                   >
                     {link.label}
                   </a>

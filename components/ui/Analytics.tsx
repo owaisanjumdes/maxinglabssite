@@ -46,7 +46,6 @@ export function AnalyticsPanel({
   className?: string;
 }) {
   const { line, area, last } = buildPath(data);
-  const gradientId = `grad-${uid}`;
 
   return (
     <div
@@ -78,13 +77,6 @@ export function AnalyticsPanel({
           className="h-28 w-full sm:h-32"
           aria-hidden="true"
         >
-          <defs>
-            <linearGradient id={gradientId} x1="0" y1="0" x2="0" y2="1">
-              <stop offset="0%" stopColor="var(--accent)" stopOpacity="0.30" />
-              <stop offset="100%" stopColor="var(--accent)" stopOpacity="0" />
-            </linearGradient>
-          </defs>
-
           {[10, 20, 30].map((y) => (
             <line
               key={y}
@@ -98,7 +90,7 @@ export function AnalyticsPanel({
             />
           ))}
 
-          <path d={area} fill={`url(#${gradientId})`} />
+          <path d={area} fill="var(--accent)" fillOpacity="0.1" />
           <path
             d={line}
             fill="none"
@@ -125,7 +117,6 @@ export function AnalyticsPanel({
 /** Compact inline trend line, no chrome. */
 export function Sparkline({ uid, data }: { uid: string; data: number[] }) {
   const { line, area } = buildPath(data);
-  const gradientId = `spark-${uid}`;
 
   return (
     <svg
@@ -134,13 +125,7 @@ export function Sparkline({ uid, data }: { uid: string; data: number[] }) {
       className="h-12 w-full"
       aria-hidden="true"
     >
-      <defs>
-        <linearGradient id={gradientId} x1="0" y1="0" x2="0" y2="1">
-          <stop offset="0%" stopColor="var(--success)" stopOpacity="0.2" />
-          <stop offset="100%" stopColor="var(--success)" stopOpacity="0" />
-        </linearGradient>
-      </defs>
-      <path d={area} fill={`url(#${gradientId})`} />
+      <path d={area} fill="var(--accent)" fillOpacity="0.1" />
       <path
         d={line}
         fill="none"
@@ -171,18 +156,18 @@ export function ThumbnailTile({
   className?: string;
 }) {
   const tints = [
-    "from-[#07080F] to-[#1D254C]",
-    "from-[#0B0E1C] to-[#272742]",
-    "from-[#071861] to-[#1D254C]",
-    "from-[#07080F] to-[#272742]",
-    "from-[#0B0E1C] to-[#1D254C]",
-    "from-[#071861] to-[#3150CB]",
+    "bg-[#222222]",
+    "bg-[#2E2E2E]",
+    "bg-[#1A1A1A]",
+    "bg-[#2A2A2A]",
+    "bg-[#262626]",
+    "bg-[#333333]",
   ];
 
   return (
     <figure className={`w-[236px] shrink-0 sm:w-[268px] ${className}`}>
       <div
-        className={`relative aspect-video overflow-hidden rounded-[7px] bg-gradient-to-br ${
+        className={`relative aspect-video overflow-hidden rounded-[7px] ${
           tints[index % tints.length]
         }`}
       >

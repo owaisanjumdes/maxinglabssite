@@ -42,7 +42,7 @@ export function GlassButton({
       radius={s.radius}
       variant={variant}
       interactive
-      className={`inline-flex shrink-0 items-stretch ${s.h} ${className}`}
+      className={`group/cta inline-flex shrink-0 items-stretch overflow-hidden ${s.h} ${className}`}
       /* Controls carry a stronger dim than the bar so labels stay legible
          over light content (spec 9: worst-case background). */
       style={
@@ -51,6 +51,15 @@ export function GlassButton({
           : undefined
       }
     >
+      {/* Hover wipe: a solid #0000FF panel scaled up from the bottom edge.
+          A transform, not a gradient — and it animates on the compositor. */}
+      {variant === "tinted" && (
+        <span
+          aria-hidden="true"
+          className="pointer-events-none absolute inset-0 -z-10 origin-bottom scale-y-0 transition-transform duration-[320ms] ease-[cubic-bezier(0.22,1,0.36,1)] group-hover/cta:scale-y-100"
+          style={{ backgroundColor: "var(--cta-hover)" }}
+        />
+      )}
       <a
         href={href}
         /* `grow`, not `w-full` — width:100% against an auto-width parent is

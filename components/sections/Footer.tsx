@@ -17,7 +17,7 @@ const SOCIALS = [
 
 export function Footer() {
   return (
-    <footer className="border-t border-warm bg-elevated">
+    <footer className="band border-t border-warm">
       <Container className="py-14">
         <div className="grid gap-10 md:grid-cols-12">
           <div className="md:col-span-5">

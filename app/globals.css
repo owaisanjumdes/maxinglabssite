@@ -17,18 +17,87 @@
   --text-secondary: #a1a3b3;
   /* Lightened from #6B6E85, which failed AA on both bg and bg-elevated. */
   --text-muted: #8a8da0;
-  --accent: #2254f5;
-  --accent-hover: #1a45d6;
-  /* #2254F5 as text is only 3.65:1 on black; this is 5.9:1. Fills keep --accent. */
-  --accent-text: #5b7fff;
-  --accent-glow: #3150cb;
-  --accent-deep: #071861;
+  --accent: #0000ff;
+  --accent-hover: #3d3dff;
+  /* #0000FF as text is only 2.44:1 on black and fails AA badly.
+     This is 4.91:1. Fills keep the true #0000FF — white on it is 8.6:1. */
+  --accent-text: #6666ff;
+  --accent-glow: #1e1ee0;
+  --accent-deep: #06064a;
   --badge-surface: #010331;
   --cta-secondary-bg: #efeeec;
   --cta-secondary-text: #131313;
   --on-accent: #ffffff;
   --success: #22c55e;
   --error: #ef4444;
+  /* The inverted band used by the closing CTA and footer. */
+  --band: var(--bg-elevated);
+  --on-band: var(--text-primary);
+  --cta: #222222;
+  --cta-hover: #0000ff;
+}
+
+/* ------------------------------------------------------------------
+   Light theme. Keep data-theme="light" on <html> to use it; remove the
+   attribute for the midnight palette. Same blue accent in both.
+   ------------------------------------------------------------------ */
+:root[data-theme="light"] {
+  --bg: #efede4;
+  --bg-elevated: #ffffff;
+  /* Same as --bg: the page is one continuous surface, no section breaks. */
+  --bg-subtle: #efede4;
+  --border: #e6e3dd;
+  --border-subtle: #edebe6;
+  --text-primary: #222222;
+  --text-secondary: #3b3b3b;
+  /* 5.4:1 on the cream page; the dark theme's #8A8DA0 would fail here. */
+  --text-muted: #5f5f5f;
+  --accent: #0000ff;
+  --accent-hover: #0000cc;
+  /* 7.81:1 on cream, so the true blue is safe as text in this theme. */
+  --accent-text: #0000ff;
+  /* Lifted so the ambient glow reads as a soft wash, not a dirty smudge. */
+  --accent-glow: #8a8aff;
+  --accent-deep: #c9c9ff;
+  --badge-surface: #ffffff;
+  --cta-secondary-bg: #ffffff;
+  --cta-secondary-text: #131313;
+  --on-accent: #ffffff;
+  --success: #1fbb34;
+  --cta: #222222;
+  --cta-hover: #0000ff;
+  /* The band no longer inverts — it sits on the same canvas. */
+  --band: #efede4;
+  --on-band: #222222;
+}
+
+/* White bar on the light theme, but translucent — the backdrop still shows
+   through, so refraction, the specular rim and inner shading all still read
+   as glass rather than a flat white box. */
+:root[data-theme="light"] {
+  /* Frost needs the backdrop to show through: at 0.72 the pane was almost
+     opaque and the blur had nothing visible to act on. */
+  --lg-dim-clear: rgba(255, 255, 255, 0.5);
+  /* Spec 2.1 wants 1-3px because Liquid Glass lenses rather than frosts.
+     A clearly visible frost needs real blur, so this theme overrides it. */
+  --lg-blur: 18px;
+  --lg-saturate: 1.9;
+  --lg-dim-control: rgba(16, 16, 22, 0.46);
+}
+
+/* The logo is white artwork: invert it only on the light theme. */
+:root[data-theme="light"] .logo-on-bar {
+  filter: invert(1);
+}
+
+/* The inverted band re-points the text tokens for everything inside it, so
+   children keep using text-ink / text-body and adapt automatically. */
+.band {
+  background-color: var(--band);
+  --text-primary: var(--on-band);
+  --text-secondary: color-mix(in srgb, var(--on-band) 65%, transparent);
+  --text-muted: color-mix(in srgb, var(--on-band) 45%, transparent);
+  --border: color-mix(in srgb, var(--on-band) 14%, transparent);
 }
 
 @theme {
@@ -53,13 +122,12 @@
 
   --radius-card: 10px;
 
-  /* Apple ships SF Pro with the OS, so Apple devices render it natively.
-     It cannot be legally self-hosted as a webfont, so Inter (loaded in
-     layout.tsx) is the fallback everywhere else - the closest widely
-     licensed grotesk to SF. On Windows you will see Inter, not SF Pro. */
+  /* Geist leads, self-hosted via the `geist` package, so every platform
+     gets the same typeface. This replaces the earlier SF-Pro-first stack:
+     keeping SF ahead of it would mean Apple devices never showed Geist. */
   --font-sans:
-    -apple-system, BlinkMacSystemFont, "SF Pro Display", "SF Pro Text",
-    var(--font-inter), system-ui, "Segoe UI", sans-serif;
+    var(--font-geist-sans), -apple-system, BlinkMacSystemFont, system-ui,
+    "Segoe UI", sans-serif;
   --font-serif: var(--font-instrument-serif), Georgia, serif;
 
   --animate-marquee: marquee 42s linear infinite;
@@ -73,6 +141,85 @@
   }
   to {
     transform: translateX(-50%);
+  }
+}
+
+/* Circular travel path, drawn from 12 o'clock clockwise as FOUR quarter
+   arcs. Two 180-degree arcs would be converted to one cubic Bezier each,
+   which approximates a semicircle poorly (~27% radius error) and makes
+   offset-distance advance unevenly, bunching the riders. Quarter arcs cut
+   that error to ~0.03%, so even delays give even spacing. --orbit-center-y is
+   measured from the top of the hero section and sits level with the FIRST
+   line of the headline, so 3 and 9 o'clock — where the marks fade in and out
+   — land beside that line rather than up under the navbar. */
+:root {
+  --orbit-size: 460px;
+  --orbit-center-y: 195px;
+  --orbit-path: path("M 230,0 A 230,230 0 0 1 460,230 A 230,230 0 0 1 230,460 A 230,230 0 0 1 0,230 A 230,230 0 0 1 230,0");
+}
+
+@media (min-width: 640px) {
+  :root {
+    --orbit-size: 760px;
+    --orbit-center-y: 244px;
+    --orbit-path: path("M 380,0 A 380,380 0 0 1 760,380 A 380,380 0 0 1 380,760 A 380,380 0 0 1 0,380 A 380,380 0 0 1 380,0");
+  }
+}
+
+@media (min-width: 1024px) {
+  :root {
+    --orbit-size: 1120px;
+    --orbit-center-y: 270px;
+    --orbit-path: path("M 560,0 A 560,560 0 0 1 1120,560 A 560,560 0 0 1 560,1120 A 560,560 0 0 1 0,560 A 560,560 0 0 1 560,0");
+  }
+}
+
+@media (min-width: 1280px) {
+  :root {
+    --orbit-size: 1240px;
+    --orbit-center-y: 270px;
+    --orbit-path: path("M 620,0 A 620,620 0 0 1 1240,620 A 620,620 0 0 1 620,1240 A 620,620 0 0 1 0,620 A 620,620 0 0 1 620,0");
+  }
+}
+
+/* offset-anchor pins the element's centre to the path; offset-rotate: auto
+   turns each shell to follow the tangent. */
+.orbit-rider {
+  position: absolute;
+  top: 0;
+  left: 0;
+  offset-path: var(--orbit-path);
+  offset-anchor: 50% 50%;
+  offset-rotate: auto;
+  animation:
+    orbit-travel var(--orbit-seconds, 40s) linear infinite,
+    orbit-fade var(--orbit-seconds, 40s) linear infinite;
+}
+
+@keyframes orbit-travel {
+  from {
+    offset-distance: 0%;
+  }
+  to {
+    offset-distance: 100%;
+  }
+}
+
+/* Opacity is non-zero across exactly 25%->75%: the drawn bottom half, from
+   3 o'clock round to 9 o'clock. That half-width window over six riders
+   spaced 16.67% apart puts exactly three on screen at all times. */
+@keyframes orbit-fade {
+  0%,
+  25% {
+    opacity: 0;
+  }
+  32%,
+  68% {
+    opacity: 1;
+  }
+  75%,
+  100% {
+    opacity: 0;
   }
 }
 
@@ -98,7 +245,7 @@
   --lg-dim-clear: rgba(255, 255, 255, 0.07);
   /* Controls sit slightly brighter than the bar so labels stay legible. */
   --lg-dim-control: rgba(255, 255, 255, 0.11);
-  --lg-tint-accent: rgba(34, 84, 245, 0.55);
+  --lg-tint-accent: var(--cta);
   --lg-rim-strength: 0.55;
   --lg-light-angle: 135deg;
   --lg-blur: 2px;
@@ -130,6 +277,11 @@
     linear-gradient(#000 0 0) content-box,
     linear-gradient(#000 0 0);
   mask-composite: exclude;
+}
+
+:root[data-theme="light"] .glass-surface {
+  outline: 1px solid rgba(34, 34, 34, 0.07);
+  outline-offset: -1px;
 }
 
 /* Content sitting on glass uses vibrancy, never pure white (spec 2.6). */
@@ -188,7 +340,7 @@
   }
 
   ::selection {
-    background-color: rgba(34, 84, 245, 0.35);
+    background-color: rgba(0, 0, 255, 0.35);
     color: var(--on-accent);
   }
 
